@@ -3,6 +3,7 @@ package me.yusufkerem;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,5 +58,10 @@ public class CATSMPMC extends JavaPlugin {
         } else {
             getLogger().warning("Skipped saving data.yml (data was null).");
         }
+    }
+
+    public void openUpgradeMenu(Player player) {
+        // TODO: Implement upgrade menu functionality
+        player.sendMessage("§6Upgrade menu is not yet implemented!");
     }
 }

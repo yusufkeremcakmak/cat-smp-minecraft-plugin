@@ -21,10 +21,14 @@ public class CatsmpCommand implements CommandExecutor {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.GOLD + "CATSMP Commands:");
             sender.sendMessage(ChatColor.YELLOW + "/catsmp upgrade" + ChatColor.WHITE + " - Opens upgrade menu");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp checkbp [player]" + ChatColor.WHITE + " - Check Blood Points");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp addbp <player>" + ChatColor.WHITE + " - Adds 1 Blood Point (Admin)");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp removebp <player>" + ChatColor.WHITE + " - Removes 1 Blood Point (Admin)");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp setbp <player> <amount>" + ChatColor.WHITE + " - Sets Blood Points (Admin)");
+            sender.sendMessage(
+                    ChatColor.YELLOW + "/catsmp checkbp [player]" + ChatColor.WHITE + " - Check Blood Points");
+            sender.sendMessage(
+                    ChatColor.YELLOW + "/catsmp addbp <player>" + ChatColor.WHITE + " - Adds 1 Blood Point (Admin)");
+            sender.sendMessage(ChatColor.YELLOW + "/catsmp removebp <player>" + ChatColor.WHITE
+                    + " - Removes 1 Blood Point (Admin)");
+            sender.sendMessage(ChatColor.YELLOW + "/catsmp setbp <player> <amount>" + ChatColor.WHITE
+                    + " - Sets Blood Points (Admin)");
             return true;
         }
 
@@ -38,8 +42,9 @@ public class CatsmpCommand implements CommandExecutor {
                 }
                 Player player = (Player) sender;
                 UUID uuid = player.getUniqueId();
-                int bp = plugin.getPlayerData().getInt(uuid + ".bloodpoints", 0);
-                player.sendMessage(ChatColor.GOLD + "You currently have " + ChatColor.YELLOW + bp + "/5" + ChatColor.GOLD + " Blood Points.");
+                int bp = plugin.getData().getInt(uuid + ".bloodpoints", 0);
+                player.sendMessage(ChatColor.GOLD + "You currently have " + ChatColor.YELLOW + bp + "/5"
+                        + ChatColor.GOLD + " Blood Points.");
                 return true;
             } else {
                 // Check others
@@ -55,8 +60,9 @@ public class CatsmpCommand implements CommandExecutor {
                 }
 
                 UUID targetUUID = target.getUniqueId();
-                int bp = plugin.getPlayerData().getInt(targetUUID + ".bloodpoints", 0);
-                sender.sendMessage(ChatColor.GOLD + target.getName() + " has " + ChatColor.YELLOW + bp + "/5" + ChatColor.GOLD + " Blood Points.");
+                int bp = plugin.getData().getInt(targetUUID + ".bloodpoints", 0);
+                sender.sendMessage(ChatColor.GOLD + target.getName() + " has " + ChatColor.YELLOW + bp + "/5"
+                        + ChatColor.GOLD + " Blood Points.");
                 return true;
             }
         }
@@ -80,7 +86,7 @@ public class CatsmpCommand implements CommandExecutor {
             }
 
             UUID targetUUID = target.getUniqueId();
-            int currentBP = plugin.getPlayerData().getInt(targetUUID + ".bloodpoints", 0);
+            int currentBP = plugin.getData().getInt(targetUUID + ".bloodpoints", 0);
 
             if (currentBP >= 5) {
                 sender.sendMessage(ChatColor.YELLOW + target.getName() + " already has the maximum of 5 Blood Points!");
@@ -88,8 +94,8 @@ public class CatsmpCommand implements CommandExecutor {
             }
 
             int newBP = Math.min(currentBP + 1, 5);
-            plugin.getPlayerData().set(targetUUID + ".bloodpoints", newBP);
-            plugin.savePlayerData();
+            plugin.getData().set(targetUUID + ".bloodpoints", newBP);
+            plugin.saveData();
 
             sender.sendMessage(ChatColor.GREEN + "Added 1 Blood Point to " + target.getName() + " (" + newBP + "/5)");
             target.sendMessage(ChatColor.GOLD + "You gained a Blood Point! (" + newBP + "/5)");
@@ -115,7 +121,7 @@ public class CatsmpCommand implements CommandExecutor {
             }
 
             UUID targetUUID = target.getUniqueId();
-            int currentBP = plugin.getPlayerData().getInt(targetUUID + ".bloodpoints", 0);
+            int currentBP = plugin.getData().getInt(targetUUID + ".bloodpoints", 0);
 
             if (currentBP <= 0) {
                 sender.sendMessage(ChatColor.YELLOW + target.getName() + " already has 0 Blood Points!");
@@ -123,10 +129,11 @@ public class CatsmpCommand implements CommandExecutor {
             }
 
             int newBP = Math.max(currentBP - 1, 0);
-            plugin.getPlayerData().set(targetUUID + ".bloodpoints", newBP);
-            plugin.savePlayerData();
+            plugin.getData().set(targetUUID + ".bloodpoints", newBP);
+            plugin.saveData();
 
-            sender.sendMessage(ChatColor.GREEN + "Removed 1 Blood Point from " + target.getName() + " (" + newBP + "/5)");
+            sender.sendMessage(
+                    ChatColor.GREEN + "Removed 1 Blood Point from " + target.getName() + " (" + newBP + "/5)");
             target.sendMessage(ChatColor.RED + "You lost a Blood Point! (" + newBP + "/5)");
             return true;
         }
@@ -163,8 +170,8 @@ public class CatsmpCommand implements CommandExecutor {
             }
 
             UUID targetUUID = target.getUniqueId();
-            plugin.getPlayerData().set(targetUUID + ".bloodpoints", amount);
-            plugin.savePlayerData();
+            plugin.getData().set(targetUUID + ".bloodpoints", amount);
+            plugin.saveData();
 
             sender.sendMessage(ChatColor.GREEN + "Set " + target.getName() + "'s Blood Points to " + amount + "/5");
             target.sendMessage(ChatColor.GOLD + "Your Blood Points have been set to " + amount + "/5");
