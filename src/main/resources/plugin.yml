@@ -1,0 +1,28 @@
+name: CATSMPMC
+version: 1.0
+main: me.yusufkerem.CATSMPMC
+api-version: 1.21
+commands:
+  catsmp:
+    description: Main command for CatSMP
+    usage: /<command> [args]
+    permission: catsmp.use
+
+permissions:
+  catsmp.use:
+    description: Allows using general CatSMP commands
+    default: true
+  catsmp.checkbp.others:
+    description: Allows checking other players’ Blood Points
+    default: op
+  catsmp.addbp:
+    description: Allows adding Blood Points
+    default: op
+  catsmp.removebp:
+    description: Allows removing Blood Points
+    default: op
+  catsmp.setbp:
+    description: Allows setting Blood Points
+    default: op
+
+
