@@ -1,28 +1,27 @@
 name: CATSMPMC
-version: 1.0
 main: me.yusufkerem.CATSMPMC
+version: 1.0
 api-version: 1.21
 commands:
   catsmp:
-    description: Main command for CatSMP
-    usage: /<command> [args]
-    permission: catsmp.use
-
+    description: Main CatSMP command
+    usage: /catsmp <sub>
+  zoom:
+    description: Dash ability for Passive cats
+  zoomcombo:
+    description: Toggle sneak+jump dash
+  role:
+    description: Admin role command
 permissions:
-  catsmp.use:
-    description: Allows using general CatSMP commands
-    default: true
-  catsmp.checkbp.others:
-    description: Allows checking other players’ Blood Points
-    default: op
   catsmp.addbp:
-    description: Allows adding Blood Points
     default: op
   catsmp.removebp:
-    description: Allows removing Blood Points
     default: op
   catsmp.setbp:
-    description: Allows setting Blood Points
+    default: op
+  catsmp.checkbp.others:
+    default: op
+  catsmp.admin:
     default: op
 
 
