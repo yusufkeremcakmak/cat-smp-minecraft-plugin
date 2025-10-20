@@ -36,18 +36,20 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     }
 
     // ----- enums & constants -----
-    public enum Role { PASSIVE, AGGRESSIVE }
+    public enum Role {
+        PASSIVE, AGGRESSIVE
+    }
 
     private static final int MAX_BP = 5;
     private static final long DASH_COOLDOWN_MS = 5000L; // 5 seconds
 
     // ability caps
-    private static final int MAX_CLAWS = 2;         // Strength up to II
-    private static final int MAX_RABIES = 5;        // up to 25% (5 * 5%)
-    private static final int MAX_PROTECTIVE = 3;    // up to 30% (3 * 10%)
-    private static final int MAX_PURRING = 2;       // Regen up to II
-    private static final int MAX_HEALTHKITTY = 5;   // up to +10 HP (5 hearts)
-    private static final int MAX_ZOOM = 3;          // up to 12 blocks (3*4)
+    private static final int MAX_CLAWS = 2; // Strength up to II
+    private static final int MAX_RABIES = 5; // up to 25% (5 * 5%)
+    private static final int MAX_PROTECTIVE = 3; // up to 30% (3 * 10%)
+    private static final int MAX_PURRING = 2; // Regen up to II
+    private static final int MAX_HEALTHKITTY = 5; // up to +10 HP (5 hearts)
+    private static final int MAX_ZOOM = 3; // up to 12 blocks (3*4)
 
     // items used in GUI (simple)
     private static final String UPGRADE_INV_TITLE = ChatColor.DARK_PURPLE + "CATSMP Upgrade Menu";
@@ -101,7 +103,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             if (sender instanceof Player p) {
                 boolean cur = zoomComboEnabled.getOrDefault(p.getUniqueId(), true);
                 zoomComboEnabled.put(p.getUniqueId(), !cur);
-                p.sendMessage(ChatColor.GREEN + "Sneak+Jump combo zoom is now: " + ( !cur ? ChatColor.AQUA + "enabled" : ChatColor.RED + "disabled"));
+                p.sendMessage(ChatColor.GREEN + "Sneak+Jump combo zoom is now: "
+                        + (!cur ? ChatColor.AQUA + "enabled" : ChatColor.RED + "disabled"));
                 savePlayer(p.getUniqueId());
                 return true;
             }
@@ -147,10 +150,12 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     // Data load/save
     // -------------------------
     private void loadAllData() {
-        if (data == null) return;
+        if (data == null)
+            return;
 
         ConfigurationSection playersSection = data.getConfigurationSection("players");
-        if (playersSection == null) return;
+        if (playersSection == null)
+            return;
 
         for (String uuidStr : playersSection.getKeys(false)) {
             try {
@@ -179,7 +184,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     }
 
     private void saveAllData() {
-        if (data == null) data = new YamlConfiguration();
+        if (data == null)
+            data = new YamlConfiguration();
         // clear players section
         data.set("players", null);
 
@@ -203,7 +209,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     }
 
     private void savePlayer(UUID uuid) {
-        if (data == null) data = new YamlConfiguration();
+        if (data == null)
+            data = new YamlConfiguration();
         String path = "players." + uuid.toString();
         data.set(path + ".role", roles.getOrDefault(uuid, Role.PASSIVE).name());
         data.set(path + ".bloodpoints", bloodPoints.getOrDefault(uuid, 3));
@@ -230,8 +237,10 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             sender.sendMessage(ChatColor.YELLOW + "/catsmp upgrade" + ChatColor.WHITE + " - Open upgrade GUI");
             sender.sendMessage(ChatColor.YELLOW + "/catsmp checkbp [player]" + ChatColor.WHITE + " - Check BP");
             sender.sendMessage(ChatColor.YELLOW + "/catsmp addbp <player>" + ChatColor.WHITE + " - Add BP (admin)");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp removebp <player>" + ChatColor.WHITE + " - Remove BP (admin)");
-            sender.sendMessage(ChatColor.YELLOW + "/catsmp setbp <player> <amt>" + ChatColor.WHITE + " - Set BP (admin)");
+            sender.sendMessage(
+                    ChatColor.YELLOW + "/catsmp removebp <player>" + ChatColor.WHITE + " - Remove BP (admin)");
+            sender.sendMessage(
+                    ChatColor.YELLOW + "/catsmp setbp <player> <amt>" + ChatColor.WHITE + " - Set BP (admin)");
             return true;
         }
 
@@ -255,7 +264,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
                 }
                 Player p = (Player) sender;
                 int bp = bloodPoints.getOrDefault(p.getUniqueId(), 3);
-                p.sendMessage(ChatColor.GOLD + "You have " + ChatColor.AQUA + bp + ChatColor.GOLD + "/" + MAX_BP + " Blood Points.");
+                p.sendMessage(ChatColor.GOLD + "You have " + ChatColor.AQUA + bp + ChatColor.GOLD + "/" + MAX_BP
+                        + " Blood Points.");
                 return true;
             } else {
                 if (!sender.hasPermission("catsmp.checkbp.others")) {
@@ -268,7 +278,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
                     return true;
                 }
                 int bp = bloodPoints.getOrDefault(target.getUniqueId(), 3);
-                sender.sendMessage(ChatColor.GOLD + target.getName() + " has " + ChatColor.AQUA + bp + ChatColor.GOLD + "/" + MAX_BP + " Blood Points.");
+                sender.sendMessage(ChatColor.GOLD + target.getName() + " has " + ChatColor.AQUA + bp + ChatColor.GOLD
+                        + "/" + MAX_BP + " Blood Points.");
                 return true;
             }
         }
@@ -296,7 +307,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             int next = Math.min(cur + 1, MAX_BP);
             bloodPoints.put(uuid, next);
             savePlayer(uuid);
-            sender.sendMessage(ChatColor.GREEN + "Added 1 BP to " + target.getName() + " (" + next + "/" + MAX_BP + ")");
+            sender.sendMessage(
+                    ChatColor.GREEN + "Added 1 BP to " + target.getName() + " (" + next + "/" + MAX_BP + ")");
             target.sendMessage(ChatColor.GOLD + "You received 1 Blood Point! (" + next + "/" + MAX_BP + ")");
             return true;
         }
@@ -324,7 +336,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             int next = Math.max(cur - 1, 0);
             bloodPoints.put(uuid, next);
             savePlayer(uuid);
-            sender.sendMessage(ChatColor.GREEN + "Removed 1 BP from " + target.getName() + " (" + next + "/" + MAX_BP + ")");
+            sender.sendMessage(
+                    ChatColor.GREEN + "Removed 1 BP from " + target.getName() + " (" + next + "/" + MAX_BP + ")");
             target.sendMessage(ChatColor.RED + "You lost 1 Blood Point! (" + next + "/" + MAX_BP + ")");
             return true;
         }
@@ -390,18 +403,6 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         savePlayer(uuid);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     // -------------------------
     // Death handling for BP gain/loss
     // -------------------------
@@ -417,7 +418,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             if (vBP > 0) {
                 int kBP = bloodPoints.getOrDefault(kUuid, 0);
                 bloodPoints.put(kUuid, Math.min(kBP + 1, MAX_BP));
-                killer.sendMessage(ChatColor.GOLD + "You gained 1 Blood Point! (" + bloodPoints.get(kUuid) + "/" + MAX_BP + ")");
+                killer.sendMessage(
+                        ChatColor.GOLD + "You gained 1 Blood Point! (" + bloodPoints.get(kUuid) + "/" + MAX_BP + ")");
             }
             // victim loses 1 (down to 0)
             bloodPoints.put(vUuid, Math.max(vBP - 1, 0));
@@ -447,7 +449,9 @@ public class CATSMPMC extends JavaPlugin implements Listener {
                 if (rabies > 0) {
                     int chance = Math.min(rabies * 5, 25); // 5% per level
                     if (random.nextInt(100) < chance) {
-                        victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 40, 2, true, false, true)); // 2s Wither III
+                        victim.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 40, 2, true, false, true)); // 2s
+                                                                                                                     // Wither
+                                                                                                                     // III
                         attacker.sendMessage(ChatColor.DARK_RED + "Rabies triggered!");
                     }
                 }
@@ -458,14 +462,17 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     // custom damage reduction for Protective Fur (aggressive)
     @EventHandler
     public void onEntityDamage(EntityDamageEvent e) {
-        if (!(e.getEntity() instanceof Player victim)) return;
+        if (!(e.getEntity() instanceof Player victim))
+            return;
         UUID uuid = victim.getUniqueId();
         Role role = roles.getOrDefault(uuid, Role.PASSIVE);
-        if (role != Role.AGGRESSIVE) return;
+        if (role != Role.AGGRESSIVE)
+            return;
 
         Map<String, Integer> levels = abilityLevels.getOrDefault(uuid, new HashMap<>());
         int protLvl = levels.getOrDefault("protectivefur", 0);
-        if (protLvl <= 0) return;
+        if (protLvl <= 0)
+            return;
 
         // reduce damage by 10% per level (max 30%)
         double reduce = Math.min(protLvl * 0.10, 0.30);
@@ -495,14 +502,19 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         List<ItemStack> items = new ArrayList<>();
 
         if (role == Role.PASSIVE) {
-            items.add(makeGuiItem(Material.POTION, ChatColor.AQUA + "Purring (Regen)", "Permanent Regeneration. Max " + MAX_PURRING));
-            items.add(makeGuiItem(Material.APPLE, ChatColor.GREEN + "Health Kitty", "Increase max hearts. Max " + MAX_HEALTHKITTY));
-            items.add(makeGuiItem(Material.RABBIT_FOOT, ChatColor.LIGHT_PURPLE + "Zoom (Dash)", "Dash forward. +4 blocks per level. Max " + MAX_ZOOM));
+            items.add(makeGuiItem(Material.POTION, ChatColor.AQUA + "Purring (Regen)",
+                    "Permanent Regeneration. Max " + MAX_PURRING));
+            items.add(makeGuiItem(Material.APPLE, ChatColor.GREEN + "Health Kitty",
+                    "Increase max hearts. Max " + MAX_HEALTHKITTY));
+            items.add(makeGuiItem(Material.RABBIT_FOOT, ChatColor.LIGHT_PURPLE + "Zoom (Dash)",
+                    "Dash forward. +4 blocks per level. Max " + MAX_ZOOM));
         } else {
             // aggressive
             items.add(makeGuiItem(Material.IRON_AXE, ChatColor.RED + "Claws", "Permanent Strength. Max " + MAX_CLAWS));
-            items.add(makeGuiItem(Material.POISONOUS_POTATO, ChatColor.DARK_PURPLE + "Rabies", "Chance to Wither III on hit. +5% per level. Max " + MAX_RABIES));
-            items.add(makeGuiItem(Material.LEATHER, ChatColor.GRAY + "Protective Fur", "Permanent damage reduction. +10% per level. Max " + MAX_PROTECTIVE));
+            items.add(makeGuiItem(Material.POISONOUS_POTATO, ChatColor.DARK_PURPLE + "Rabies",
+                    "Chance to Wither III on hit. +5% per level. Max " + MAX_RABIES));
+            items.add(makeGuiItem(Material.LEATHER, ChatColor.GRAY + "Protective Fur",
+                    "Permanent damage reduction. +10% per level. Max " + MAX_PROTECTIVE));
         }
 
         // put items into inventory
@@ -528,14 +540,16 @@ public class CATSMPMC extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (!(event.getWhoClicked() instanceof Player player))
+            return;
 
         // Make sure they are clicking inside the upgrade menu
-        if (event.getView().getTitle().equalsIgnoreCase("CatSMP Upgrades")) {
+        if (event.getView().getTitle().equals(UPGRADE_INV_TITLE)) {
             event.setCancelled(true); // Prevent taking items
 
             ItemStack clicked = event.getCurrentItem();
-            if (clicked == null || !clicked.hasItemMeta()) return;
+            if (clicked == null || !clicked.hasItemMeta())
+                return;
 
             String name = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
             UUID uuid = player.getUniqueId();
@@ -579,7 +593,6 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         }
     }
 
-
     // -------------------------
     // Apply abilities to player (auto apply on join and after upgrades)
     // -------------------------
@@ -599,7 +612,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             int purr = Math.min(lvlMap.getOrDefault("purring", 0), MAX_PURRING);
             if (purr > 0) {
                 int amp = Math.max(0, purr - 1); // level 1 => amp 0, level 2 => amp 1
-                p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, amp, true, false, true));
+                p.addPotionEffect(
+                        new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, amp, true, false, true));
             }
 
             // Health Kitty -> Max HP increase
@@ -609,8 +623,10 @@ public class CATSMPMC extends JavaPlugin implements Listener {
                 double base = 20.0;
                 double extra = 2.0 * healthLvl; // each level +2 HP (1 heart)
                 maxHealth.setBaseValue(base + extra);
-                if (p.getHealth() > maxHealth.getValue()) p.setHealth(maxHealth.getValue());
-                else p.setHealth(Math.min(p.getHealth(), maxHealth.getValue()));
+                if (p.getHealth() > maxHealth.getValue())
+                    p.setHealth(maxHealth.getValue());
+                else
+                    p.setHealth(Math.min(p.getHealth(), maxHealth.getValue()));
             }
 
             // Zoom -> (no ongoing potion) - handled on dash trigger
@@ -619,7 +635,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             int clawsLvl = Math.min(lvlMap.getOrDefault("claws", 0), MAX_CLAWS);
             if (clawsLvl > 0) {
                 int amp = Math.max(0, clawsLvl - 1); // 1->amp0, 2->amp1
-                p.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, amp, true, false, true));
+                p.addPotionEffect(
+                        new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, amp, true, false, true));
             }
 
             // Protective Fur -> handled in damage event (no potion effect)
@@ -650,24 +667,30 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         // distance = 4 * level; cap already by MAX_ZOOM
         double dist = Math.min(4.0 * zoomLvl, 12.0);
         Vector dir = p.getLocation().getDirection().clone().normalize().multiply(dist);
-        // small upward push so player doesn't immediately hit ground if they dash on ground
+        // small upward push so player doesn't immediately hit ground if they dash on
+        // ground
         dir.setY(Math.max(0.2, dir.getY()));
         p.setVelocity(dir);
         p.sendMessage(ChatColor.AQUA + "Zoom!");
     }
 
-    // attempt to detect sneak + jump -> PlayerToggleSneakEvent is fired when toggling sneak
-    // we'll check whether player's upward velocity is positive (just jumped) when toggled into sneak
+    // attempt to detect sneak + jump -> PlayerToggleSneakEvent is fired when
+    // toggling sneak
+    // we'll check whether player's upward velocity is positive (just jumped) when
+    // toggled into sneak
     @EventHandler
     public void onSneakToggle(PlayerToggleSneakEvent e) {
         Player p = e.getPlayer();
         boolean comboEnabled = zoomComboEnabled.getOrDefault(p.getUniqueId(), true);
-        if (!comboEnabled) return;
+        if (!comboEnabled)
+            return;
 
         // only consider when starting to sneak
         if (!p.isSneaking()) {
-            // p.isSneaking() reflects new state already; we need to check if they are now sneaking
-            // But to be robust, we'll check if player velocity upwards is positive (recent jump)
+            // p.isSneaking() reflects new state already; we need to check if they are now
+            // sneaking
+            // But to be robust, we'll check if player velocity upwards is positive (recent
+            // jump)
             Vector vel = p.getVelocity();
             if (vel.getY() > 0.0) {
                 // they just jumped and are now sneaking -> treat as combo
@@ -699,11 +722,13 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     }
 
     // -------------------------
-    // Utility: applying upgrades via commands (if you want CLI upgrade implementation later)
+    // Utility: applying upgrades via commands (if you want CLI upgrade
+    // implementation later)
     // -------------------------
     public boolean trySpendBP(UUID uuid) {
         int cur = bloodPoints.getOrDefault(uuid, 3);
-        if (cur <= 0) return false;
+        if (cur <= 0)
+            return false;
         bloodPoints.put(uuid, cur - 1);
         savePlayer(uuid);
         return true;
@@ -715,8 +740,5 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     public FileConfiguration getData() {
         return this.data; // assuming 'data' is your custom config FileConfiguration
     }
-
-
-
 
 }
