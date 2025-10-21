@@ -32,6 +32,8 @@ import java.util.*;
 
 public class CATSMPMC extends JavaPlugin implements Listener {
 
+    private static Role Role;
+
     public void saveData() {
     }
 
@@ -559,25 +561,8 @@ public class CATSMPMC extends JavaPlugin implements Listener {
             String path = "players." + uuid + ".";
 
             // Ability upgrade handling
-            if (name.equalsIgnoreCase("Speed Boost")) {
-                int level = data.getInt(path + "speedboost", 0);
-                if (level < 5) {
-                    data.set(path + "speedboost", level + 1);
-                    player.sendMessage(ChatColor.GREEN + "Speed Boost upgraded to level " + (level + 1) + "!");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Speed Boost is already maxed out!");
-                }
-            }
 
-            if (name.equalsIgnoreCase("Fireball")) {
-                int level = data.getInt(path + "fireball", 0);
-                if (level < 5) {
-                    data.set(path + "fireball", level + 1);
-                    player.sendMessage(ChatColor.GOLD + "Fireball upgraded to level " + (level + 1) + "!");
-                } else {
-                    player.sendMessage(ChatColor.RED + "Fireball is already maxed out!");
-                }
-            }
+
 
             // etc. for claws, health kitty, purring, rabies
 
