@@ -1,27 +1,41 @@
 name: CATSMPMC
+version: 1.0.0
 main: me.yusufkerem.CATSMPMC
-version: 1.0
-api-version: 1.21
+api-version: 1.19
+author: YusufKerem
+description: Cat SMP Minecraft Plugin with roles and abilities
+
 commands:
   catsmp:
-    description: Main CatSMP command
-    usage: /catsmp <sub>
+    description: Main CATSMP command
+    usage: /catsmp <subcommand>
+    aliases: [cat, csmp]
   zoom:
-    description: Dash ability for Passive cats
+    description: Trigger dash ability
+    usage: /zoom
   zoomcombo:
-    description: Toggle sneak+jump dash
+    description: Toggle sneak+jump combo for zoom
+    usage: /zoomcombo
   role:
-    description: Admin role command
+    description: Manage player roles
+    usage: /role set <player> <passive|aggressive>
+    permission: catsmp.admin
+
 permissions:
+  catsmp.admin:
+    description: Administrative permissions for CATSMP
+    default: op
   catsmp.addbp:
+    description: Permission to add blood points
     default: op
   catsmp.removebp:
+    description: Permission to remove blood points
     default: op
   catsmp.setbp:
+    description: Permission to set blood points
     default: op
   catsmp.checkbp.others:
-    default: op
-  catsmp.admin:
+    description: Permission to check other players' blood points
     default: op
 
 

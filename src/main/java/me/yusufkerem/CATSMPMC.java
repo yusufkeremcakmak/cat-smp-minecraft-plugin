@@ -32,11 +32,6 @@ import java.util.*;
 
 public class CATSMPMC extends JavaPlugin implements Listener {
 
-    private static Role Role;
-
-    public void saveData() {
-    }
-
     // ----- enums & constants -----
     public enum Role {
         PASSIVE, AGGRESSIVE
@@ -498,25 +493,30 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     // -------------------------
     public void openUpgradeMenu(Player p) {
         Role role = roles.getOrDefault(p.getUniqueId(), Role.PASSIVE);
+        Map<String, Integer> playerLevels = abilityLevels.getOrDefault(p.getUniqueId(), new HashMap<>());
         Inventory inv = Bukkit.createInventory(null, 9, UPGRADE_INV_TITLE);
 
         // build items depending on role
         List<ItemStack> items = new ArrayList<>();
 
         if (role == Role.PASSIVE) {
-            items.add(makeGuiItem(Material.POTION, ChatColor.AQUA + "Purring (Regen)",
-                    "Permanent Regeneration. Max " + MAX_PURRING));
-            items.add(makeGuiItem(Material.APPLE, ChatColor.GREEN + "Health Kitty",
-                    "Increase max hearts. Max " + MAX_HEALTHKITTY));
-            items.add(makeGuiItem(Material.RABBIT_FOOT, ChatColor.LIGHT_PURPLE + "Zoom (Dash)",
-                    "Dash forward. +4 blocks per level. Max " + MAX_ZOOM));
+            items.add(makeGuiItemWithLevel(Material.POTION, ChatColor.AQUA + "Purring (Regen)",
+                    "Permanent Regeneration", "purring", playerLevels.getOrDefault("purring", 0), MAX_PURRING));
+            items.add(makeGuiItemWithLevel(Material.APPLE, ChatColor.GREEN + "Health Kitty",
+                    "Increase max hearts", "healthkitty", playerLevels.getOrDefault("healthkitty", 0),
+                    MAX_HEALTHKITTY));
+            items.add(makeGuiItemWithLevel(Material.RABBIT_FOOT, ChatColor.LIGHT_PURPLE + "Zoom (Dash)",
+                    "Dash forward. +4 blocks per level", "zoom", playerLevels.getOrDefault("zoom", 0), MAX_ZOOM));
         } else {
             // aggressive
-            items.add(makeGuiItem(Material.IRON_AXE, ChatColor.RED + "Claws", "Permanent Strength. Max " + MAX_CLAWS));
-            items.add(makeGuiItem(Material.POISONOUS_POTATO, ChatColor.DARK_PURPLE + "Rabies",
-                    "Chance to Wither III on hit. +5% per level. Max " + MAX_RABIES));
-            items.add(makeGuiItem(Material.LEATHER, ChatColor.GRAY + "Protective Fur",
-                    "Permanent damage reduction. +10% per level. Max " + MAX_PROTECTIVE));
+            items.add(makeGuiItemWithLevel(Material.IRON_AXE, ChatColor.RED + "Claws",
+                    "Permanent Strength", "claws", playerLevels.getOrDefault("claws", 0), MAX_CLAWS));
+            items.add(makeGuiItemWithLevel(Material.POISONOUS_POTATO, ChatColor.DARK_PURPLE + "Rabies",
+                    "Chance to Wither III on hit. +5% per level", "rabies", playerLevels.getOrDefault("rabies", 0),
+                    MAX_RABIES));
+            items.add(makeGuiItemWithLevel(Material.LEATHER, ChatColor.GRAY + "Protective Fur",
+                    "Permanent damage reduction. +10% per level", "protectivefur",
+                    playerLevels.getOrDefault("protectivefur", 0), MAX_PROTECTIVE));
         }
 
         // put items into inventory
@@ -529,12 +529,24 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         p.openInventory(inv);
     }
 
-    private ItemStack makeGuiItem(Material m, String name, String loreText) {
+    private ItemStack makeGuiItemWithLevel(Material m, String name, String description, String abilityKey,
+            int currentLevel, int maxLevel) {
         ItemStack it = new ItemStack(m);
         ItemMeta meta = it.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(name);
-            meta.setLore(Collections.singletonList(ChatColor.GRAY + loreText));
+
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + description);
+            lore.add(ChatColor.YELLOW + "Current Level: " + ChatColor.WHITE + currentLevel + "/" + maxLevel);
+
+            if (currentLevel >= maxLevel) {
+                lore.add(ChatColor.GREEN + "✓ MAX LEVEL");
+            } else {
+                lore.add(ChatColor.AQUA + "Click to upgrade! (Costs 1 BP)");
+            }
+
+            meta.setLore(lore);
             it.setItemMeta(meta);
         }
         return it;
@@ -555,21 +567,72 @@ public class CATSMPMC extends JavaPlugin implements Listener {
 
             String name = ChatColor.stripColor(clicked.getItemMeta().getDisplayName());
             UUID uuid = player.getUniqueId();
+            Role role = roles.getOrDefault(uuid, Role.PASSIVE);
 
-            // Access your data file
-            FileConfiguration data = this.data; // assuming you have 'data' already
-            String path = "players." + uuid + ".";
+            // Check if player has blood points
+            int currentBP = bloodPoints.getOrDefault(uuid, 3);
+            if (currentBP <= 0) {
+                player.sendMessage(ChatColor.RED + "You don't have enough Blood Points!");
+                return;
+            }
 
-            // Ability upgrade handling
+            Map<String, Integer> levels = abilityLevels.getOrDefault(uuid, new HashMap<>());
+            String abilityKey = null;
+            int maxLevel = 0;
+            boolean upgraded = false;
 
+            // Determine which ability was clicked and its constraints
+            if (role == Role.PASSIVE) {
+                if (name.contains("Purring")) {
+                    abilityKey = "purring";
+                    maxLevel = MAX_PURRING;
+                } else if (name.contains("Health Kitty")) {
+                    abilityKey = "healthkitty";
+                    maxLevel = MAX_HEALTHKITTY;
+                } else if (name.contains("Zoom")) {
+                    abilityKey = "zoom";
+                    maxLevel = MAX_ZOOM;
+                }
+            } else { // AGGRESSIVE
+                if (name.contains("Claws")) {
+                    abilityKey = "claws";
+                    maxLevel = MAX_CLAWS;
+                } else if (name.contains("Rabies")) {
+                    abilityKey = "rabies";
+                    maxLevel = MAX_RABIES;
+                } else if (name.contains("Protective Fur")) {
+                    abilityKey = "protectivefur";
+                    maxLevel = MAX_PROTECTIVE;
+                }
+            }
 
+            // Process the upgrade
+            if (abilityKey != null) {
+                int currentLevel = levels.getOrDefault(abilityKey, 0);
 
-            // etc. for claws, health kitty, purring, rabies
+                if (currentLevel >= maxLevel) {
+                    player.sendMessage(ChatColor.YELLOW + "This ability is already at max level!");
+                    return;
+                }
 
-            try {
-                data.save(dataFile);
-            } catch (IOException e) {
-                e.printStackTrace();
+                // Upgrade the ability
+                levels.put(abilityKey, currentLevel + 1);
+                abilityLevels.put(uuid, levels);
+
+                // Spend blood point
+                bloodPoints.put(uuid, currentBP - 1);
+
+                upgraded = true;
+                player.sendMessage(ChatColor.GREEN + "Upgraded " + name + " to level " + (currentLevel + 1) + "!");
+                player.sendMessage(ChatColor.GOLD + "Blood Points: " + (currentBP - 1) + "/" + MAX_BP);
+            }
+
+            if (upgraded) {
+                // Apply new abilities
+                applyAbilities(player);
+
+                // Save player data
+                savePlayer(uuid);
             }
 
             // Refresh menu
@@ -670,15 +733,11 @@ public class CATSMPMC extends JavaPlugin implements Listener {
         if (!comboEnabled)
             return;
 
-        // only consider when starting to sneak
-        if (!p.isSneaking()) {
-            // p.isSneaking() reflects new state already; we need to check if they are now
-            // sneaking
-            // But to be robust, we'll check if player velocity upwards is positive (recent
-            // jump)
+        // Fix: Check if player is NOW sneaking (e.isSneaking() gives new state)
+        if (e.isSneaking()) {
+            // Player just started sneaking, check if they have upward velocity (jumping)
             Vector vel = p.getVelocity();
-            if (vel.getY() > 0.0) {
-                // they just jumped and are now sneaking -> treat as combo
+            if (vel.getY() > 0.1) { // Slight threshold to avoid false triggers
                 triggerDash(p);
             }
         }
