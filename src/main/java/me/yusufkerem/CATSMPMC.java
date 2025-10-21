@@ -15,7 +15,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.Inventory;
@@ -483,8 +482,12 @@ public class CATSMPMC extends JavaPlugin implements Listener {
     // -------------------------
     @EventHandler
     public void onFall(EntityDamageEvent e) {
-        if (e.getEntity() instanceof Player && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
-            e.setCancelled(true);
+        if (e.getEntity() instanceof Player player && e.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            // Only cancel fall damage for players who have a role in the cat SMP system
+            UUID uuid = player.getUniqueId();
+            if (roles.containsKey(uuid)) {
+                e.setCancelled(true);
+            }
         }
     }
 
